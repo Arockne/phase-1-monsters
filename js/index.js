@@ -14,7 +14,7 @@ function monsterForm() {
   form.addEventListener('submit', addMonster);
 }
 
-function getMonsters(page) {
+function getMonsters(page = 1) {
   fetch(`http://localhost:3000/monsters?_limit=50&_page=${page}`)
   .then(resp => resp.json())
   .then(monsters => monsters.forEach(createMonster))
