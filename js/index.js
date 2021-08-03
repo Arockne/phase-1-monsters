@@ -1,13 +1,5 @@
-//when page loads, show the first 50 monsters
-  //each monster's name, age, and description
-//above list of monsters
-  //should have a form to create a new monster
-    //should have fieelds for name, age, and description
-    //create monster button
-      //when clicked should be added the list and saved to the API
-//at the end of the list of monsters
-  //show a button
-  //the button should load the next 50 monsters and show them
+let page = 1;
+
 function monsterForm() {
   const monsterCreator = document.querySelector('#create-monster');
   monsterCreator.innerHTML = `
@@ -20,12 +12,10 @@ function monsterForm() {
   `
   const form = monsterCreator.querySelector('form');
   form.addEventListener('submit', addMonster);
-
-  return monsterCreator;
 }
 
-function getMonsters() {
-  fetch('http://localhost:3000/monsters?_limit=100&_page=11')
+function getMonsters(page) {
+  fetch(`http://localhost:3000/monsters?_limit=50&_page=${page}`)
   .then(resp => resp.json())
   .then(monsters => monsters.forEach(createMonster))
   .catch(err => document.querySelector('#monster-container').textContent = err.message);
@@ -68,7 +58,37 @@ function createMonster(monster) {
   document.querySelector('#monster-container').appendChild(div);
 }
 
+function removePreviousMonsters() {
+  const monsters = document.querySelector('#monster-container');
+  Array.from(monsters.children).forEach(monster => monster.remove())
+}
+
+function pageTurner() {
+  const back = document.querySelector('#back');
+  back.addEventListener('click', previous);
+  const forward = document.querySelector('#forward');
+  forward.addEventListener('click', next);
+}
+
+function previous() {
+  page -= 1;
+  if (page < 1) {
+    alert('aint no monsters here!');
+    page = 1;
+    return;
+  }
+  removePreviousMonsters()
+  getMonsters(page);
+}
+
+function next() {
+  page += 1;
+  removePreviousMonsters()
+  getMonsters(page);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   getMonsters();
   monsterForm();
+  pageTurner();
 });
